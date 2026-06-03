@@ -1,0 +1,58 @@
+name: "Holster Scan"
+description: "Scan for hallucinated or typosquatted package imports and emit SARIF."
+inputs:
+  path:
+    description: "Repository path to scan."
+    required: false
+    default: "."
+  fail-on:
+    description: "Fail threshold: high or medium."
+    required: false
+    default: "high"
+  config:
+    description: "Optional path to .holster.yml."
+    required: false
+    default: ""
+  offline:
+    description: "Disable registry lookups."
+    required: false
+    default: "false"
+  upload-sarif:
+    description: "Upload SARIF to GitHub code scanning."
+    required: false
+    default: "true"
+runs:
+  using: "composite"
+  steps:
+    - name: Install Holster Scan
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install "${{ github.action_path }}"
+
+    - name: Run Holster Scan
+      id: scan
+      shell: bash
+      run: |
+        set +e
+        args=(scan "${{ inputs.path }}" --format sarif --fail-on "${{ inputs.fail-on }}")
+        if [ -n "${{ inputs.config }}" ]; then
+          args+=(--config "${{ inputs.config }}")
+        fi
+        if [ "${{ inputs.offline }}" = "true" ]; then
+          args+=(--offline)
+        fi
+        holster-scan "${args[@]}" > holster-scan.sarif
+        code=$?
+        echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+        exit 0
+
+    - name: Upload SARIF
+      if: inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: holster-scan.sarif
+
+    - name: Apply fail threshold
+      shell: bash
+      run: exit "${{ steps.scan.outputs.exit_code }}"

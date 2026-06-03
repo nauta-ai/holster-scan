@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "holster-scan"
+version = "0.0.1"
+description = "Local-first scanner for hallucinated and typosquatted package imports."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "tomli>=2; python_version<'3.11'",
+]
+authors = [
+  { name = "Nauta AI" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Security",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.scripts]
+holster-scan = "holster_scan.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["holster_scan*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
