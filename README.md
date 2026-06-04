@@ -7,8 +7,8 @@ Coding agents (Claude Code, Cursor, Codex) and MCP servers now reach your files,
 Not another secret scanner. A pre-run / pre-share boundary check for AI-agent work.
 
 ```bash
-pipx install git+https://github.com/nauta-ai/holster-scan   # PyPI + Homebrew coming
-holster-scan .                                              # scan the current repo + any agent/MCP config
+pip install holster-scan        # or from source: pipx install git+https://github.com/nauta-ai/holster-scan
+holster-scan .                  # scan the current repo + any agent/MCP config
 ```
 
 Runs entirely on your machine. Your code, configs, and secrets never leave it. No account, no telemetry.
